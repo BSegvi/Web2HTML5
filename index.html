@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Vrlo jednostavna HTML5 igra</title>
+    <style>
+      canvas {
+        border: 1px solid #000000;
+        background-color: #f1f1f1;
+      }
+    </style>
+    <script>
+      var gamePieces = [];
+
+      const minNOfComponents = 1;
+      const maxNOfComponents = 4;
+      let maxSpeed = 1.2;
+      let minSpeed = 1.1;
+
+      function random(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+      }
+
+      function getRandomPoint() {
+        var xPos = random(30, 450);
+        var yPos = random(30, 240);
+        return [xPos, yPos];
+      }
+      let rndInt = random(minNOfComponents, maxNOfComponents);
+      console.log(rndInt);
+      if (true) {
+        let maxSpeed = 5;
+        let minSpeed = 2.5;
+      }
+      var myGamePiece;
+      function startGame() {
+        for (var i = 0; i <= rndInt; i++) {
+          let x = random(30, 430);
+          let y = random(30, 240);
+          gamePieces.push(new component(40, 40, "red", x, y));
+
+          myGameArea.start();
+        }
+        console.log(gamePieces);
+
+        //myGamePiece2 = new component(30, 30, "blue", 200, 200);
+      }
+
+      var myGameArea = {
+        canvas: document.createElement("canvas"),
+        start: function () {
+          this.canvas.id = "myGameCanvas";
+          this.canvas.width = 480;
+          this.canvas.height = 270;
+          this.context = this.canvas.getContext("2d");
+          document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+          this.frameNo = 0;
+          this.interval = setInterval(updateGameArea, 20);
+        },
+        stop: function () {
+          clearInterval(this.interval);
+        },
+        clear: function () {
+          this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        },
+      };
+      function component(width, height, color, x, y, type) {
+        let startingSpeedX = random(minSpeed, maxSpeed);
+        let startingSpeedY = random(minSpeed, maxSpeed);
+        this.type = type;
+        this.width = width;
+        this.height = height;
+        this.speed_x = startingSpeedX;
+        this.speed_y = startingSpeedY;
+        this.x = x;
+        this.y = y;
+
+        this.update = function () {
+          ctx = myGameArea.context;
+          ctx.save();
+          ctx.translate(this.x, this.y);
+          ctx.fillStyle = color;
+
+          ctx.fillRect(
+            this.width / -2,
+            this.height / -2,
+            this.width,
+            this.height
+          );
+          ctx.restore();
+        };
+
+        this.newPos = function () {
+          let brzina = random(minSpeed, maxSpeed);
+          if (this.x - this.width / 2 < 0) this.speed_x = brzina;
+          else if (this.x + this.width / 2 >= myGameArea.context.canvas.width)
+            this.speed_x = -brzina;
+          if (this.y - this.height / 2 < 0) this.speed_y = -brzina;
+          else if (this.y + this.height / 2 >= myGameArea.context.canvas.height)
+            this.speed_y = brzina;
+          this.x += this.speed_x;
+          this.y -= this.speed_y;
+        };
+      }
+      //const canvas = document.getElementById("myGameCanvas");
+      addEventListener("click", function (event) {
+        let x = event.offsetX;
+        let y = event.offsetY;
+
+        for (i = 0; i < gamePieces.length; i++) {
+          if (
+            x >= gamePieces[i].x - 20 &&
+            x <= gamePieces[i].x + 20 &&
+            y >= gamePieces[i].y - 20 &&
+            y <= gamePieces[i].y + 20
+          )
+            gamePieces.splice(i, 1);
+        }
+      });
+      function updateGameArea() {
+        if (gamePieces.length > 0) {
+          myGameArea.clear();
+        } else if (gamePieces == 0) {
+          myGameArea.clear();
+          myGameArea.context.font = "bold 14pt Courier";
+          myGameArea.context.fillText(
+            "Eliminirali ste sve komponente!",
+            80,
+            130
+          );
+        }
+
+        for (var i = 0; i < gamePieces.length; i++) {
+          gamePieces[i].newPos();
+          gamePieces[i].update();
+        }
+        let hit = rndInt - (gamePieces.length - 1);
+        myGameArea.context.font = "15px Georgia";
+        myGameArea.context.fillText(
+          "Broj komponenti je: " + gamePieces.length,
+
+          320,
+          20
+        );
+        myGameArea.context.fillText(
+          "Eliminirali ste: " + hit,
+
+          320,
+          40
+        );
+      }
+    </script>
+  </head>
+  <body onload="startGame()">
+    <h1>Vrlo jednostavna HTML5 igra</h1>
+  </body>
+</html>
